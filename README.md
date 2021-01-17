@@ -10,7 +10,7 @@ The code is in Julia. From the root of this folder run julia and:
 
     using Pkg
     Pkg.activate(".")
-    Pkg.instantiate(".")
+    Pkg.instantiate()
 
     include(joinpath("scripts", "run.jl"))
 
