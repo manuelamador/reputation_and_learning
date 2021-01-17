@@ -1,7 +1,15 @@
+# Before runnign this file, make sure you have the necessary packages installed. 
+# Do: 
+#        using Pkg
+#        Pkg.activate(".")
+#        Pkg.instantiate()
+
+
 include(joinpath(@__DIR__, "..", "src", "reputation_and_learning.jl"))
 
 # Generate the model instance with the basic parameters
 m = SimpleModel()
+
 @info m  # prints the parameters.
 
         # Info: SimpleModel{Float64}
