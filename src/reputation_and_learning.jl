@@ -2,6 +2,7 @@ using Roots
 using Parameters
 using DifferentialEquations
 using QuadGK
+using Plots
 
 
 const _tmax = 1000.0
