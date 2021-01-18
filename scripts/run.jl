@@ -35,7 +35,10 @@ sol = construct_solution(m)
         # get_m(sol) = 197.87246177564631
 
 # Do Figure 1 in the paper and save it to PDF
-p = plots(sol, plot_tmax=80)
-savefig(p, joinpath(@__DIR__, "..", "output", "figure.pdf"))
+p = figure1(sol, plot_tmax=80)
+savefig(p, joinpath(@__DIR__, "..", "output", "figure1.pdf"))
+savefig(p, joinpath(@__DIR__, "..", "output", "figure1.png"))
 
-savefig(p, joinpath(@__DIR__, "..", "output", "figure.png"))
+p2 = figure2(sol)
+savefig(p2, joinpath(@__DIR__, "..", "output", "figure2.pdf"))
+savefig(p2, joinpath(@__DIR__, "..", "output", "figure2.png"))

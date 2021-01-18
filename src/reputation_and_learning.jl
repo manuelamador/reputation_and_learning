@@ -3,6 +3,7 @@ using Parameters
 using DifferentialEquations
 using QuadGK
 using Plots
+using Interpolations
 
 
 const _tmax = 1000.0
@@ -155,11 +156,11 @@ function construct_solution(m::AbstractModel; tmax=_tmax)
 
 
     (bsol=bsol, ρsol=ρsol, T=T, q=q, b=b, ρ=ρ, c=c, yield=yield, F=F, default_rate=default_rate, 
-    trade_deficit=trade_deficit, x=xF)
+    trade_deficit=trade_deficit, x=xF, m=m)
 end
 
 
-function plots(sol; plot_tmax=80)
+function figure1(sol; plot_tmax=80)
     trange = collect(range(0, plot_tmax, length=100))
 
     p1 = plot(trange, [sol.q(t) for t ∈ trange], legend=false, lw=2, 
@@ -203,7 +204,7 @@ function plots(sol; plot_tmax=80)
 end 
 
 
-function plots(m::AbstractModel; tmax=_tmax, plot_tmax=80)
+function figure1(m::AbstractModel; tmax=_tmax, plot_tmax=80)
 
     sol = construct_solution(m, tmax=tmax)
     plots(sol, plot_tmax=plot_tmax)
@@ -215,4 +216,64 @@ function get_m(sol)
     x = sol.x 
     f = t -> exp(quadgk(x, t, T)[1])
     return T + quadgk(t -> (t * x(t) * f(t)), 0, T)[1]
+end 
+
+
+function figure2(sol)
+    @unpack T  = sol
+    bF, qF, ρF = sol.b, sol.q, sol.ρ 
+    @unpack ϵ, δ, i, λ = sol.m
+
+    trange = range(0.0, T, length=100)
+
+    # Creating ρ as a function of b
+    ρ_interp =LinearInterpolation( [bF(t) for t in trange], [ρF(t) for t in trange])
+    # Creating q as a function of b
+    q_interp =LinearInterpolation( [bF(t) for t in trange], [qF(t) for t in trange])
+
+    brange = range(0.0, bF(T), length=17)[2:end-1]
+
+    # u = [ρ, q]
+    # t  = b    
+    condition(u, t, integrator) = u[1] - 1
+    affect!(integrator) = terminate!(integrator)
+    cb = ContinuousCallback(condition, affect!)
+
+    sols = []
+    for bi in brange 
+        ρ0 = ρ_interp(bi)
+        q0 = q_interp(bi)
+
+        bspan = (bi, 0.0)
+        
+        ρb_prime = (ρ, q, b) ->  (ϵ * (1 - ρ) - ρ * δ) / h(m, b, q)
+        qb_prime = (q, b) -> ((i + λ) * q - (i + λ)) / h(m, b, q)
+
+        prob = ODEProblem(
+            (u, p, t) -> [ρb_prime(u[1], u[2], t), qb_prime(u[2], t)],
+            [ρ0, q0],
+            bspan
+        )
+
+        push!(sols, solve(prob, Tsit5(), callback=cb))
+    end 
+
+    p = plot([bF(t) for t in trange], [ρF(t) for t in trange], 
+            lw=4, 
+            color=:blue, 
+            legend=false, 
+            size=(600, 400))
+
+    for s in sols 
+        plot!(p, s.t, [s(b)[1] for b in s.t], lw=2, color=:gray)
+    end 
+
+    p
+
+    # sols
+end
+
+function figure2(m::AbstractModel; tmax=_tmax)
+    sol = construct_solution(m, tmax=tmax)
+    figure2(sol)
 end 
