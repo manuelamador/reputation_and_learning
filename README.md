@@ -17,4 +17,4 @@ The script solves the model and outputs the parameters, the value of `T` and the
 
 The PDF figure is saved in the `output` folder. 
 
-
+![image](output/figure.png)

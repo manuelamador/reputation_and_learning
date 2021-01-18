@@ -38,3 +38,4 @@ sol = construct_solution(m)
 p = plots(sol, plot_tmax=80)
 savefig(p, joinpath(@__DIR__, "..", "output", "figure.pdf"))
 
+savefig(p, joinpath(@__DIR__, "..", "output", "figure.png"))
