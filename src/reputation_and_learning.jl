@@ -6,7 +6,7 @@ using Plots
 using Interpolations
 
 
-const _tmax = 1000.0
+const _tmax = 100.0
 
 abstract type AbstractModel end 
 
@@ -161,7 +161,7 @@ end
 
 
 function figure1(sol; plot_tmax=80)
-    trange = collect(range(0, plot_tmax, length=100))
+    trange = collect(range(0, plot_tmax, length=500))
 
     p1 = plot(trange, [sol.q(t) for t ∈ trange], legend=false, lw=2, 
         title="q")
