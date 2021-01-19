@@ -182,45 +182,25 @@ end
 
 function figure1(sol; plot_tmax=80)
     trange = collect(range(0, plot_tmax, length=500))
-
-    p1 = plot(trange, [sol.q(t) for t ∈ trange], legend=false, lw=2, 
-        title="q")
-    vline!(p1, [sol.T])
-
-
-    p2 = plot(trange, [sol.b(t) for t ∈ trange], legend=false, lw=2, 
-    title="b")
-    vline!(p2, [sol.T])
-
-    p3 = plot(trange, [sol.ρ(t) for t ∈ trange], legend=false, lw=2, 
-    title="ρ")
-    vline!(p3, [sol.T])
-
-    p4 = plot(trange, [sol.c(t) for t ∈ trange], legend=false, lw=2, 
-    title="c")
-    vline!(p4, [sol.T])
-
-    p5 = plot(trange, [sol.yield(t) for t ∈ trange], legend=false, lw=2, 
-    title="yield")
-    vline!(p5, [sol.T])
+    plist = []
+    for (var, name) in ( 
+                        (sol.q, "q"), 
+                        (sol.b, "b"),
+                        (sol.ρ, "ρ"), 
+                        (sol.c, "c"),
+                        (sol.yield, "yield"),
+                        (sol.F, "\$F_0\$"),
+                        (sol.default_rate, "default rate"),
+                        (sol.trade_deficit, "trade deficit"),
+                        (sol.x, "x"))          
+        p = plot(trange, [var(t) for t ∈ trange], 
+                legend=false, lw=4, 
+                title=name)
+        vline!(p, [sol.T])
+        push!(plist, p)
+    end
     
-    p6 = plot(trange, [sol.F(t) for t ∈ trange], legend=false, lw=2, 
-    title="\$F_0\$")
-    vline!(p6, [sol.T])
-    
-    p7 = plot(trange, [sol.default_rate(t) for t ∈ trange], legend=false, lw=2, 
-    title="default rate")
-    vline!(p7, [sol.T])
-
-    p8 = plot(trange, [sol.trade_deficit(t) for t ∈ trange], legend=false, lw=2, 
-    title="trade deficit")
-    vline!(p8, [sol.T])
-
-    p9 = plot(trange, [sol.x(t) for t ∈ trange], legend=false, lw=2, 
-    title="x")
-    vline!(p9, [sol.T])
-
-    plot(p1, p2, p3, p4, p5, p6, p7, p8, p9, layout=(3, 3), size=(1000, 800))
+    plot(plist..., layout=(3, 3), size=(1000, 800))
 end 
 
 
@@ -288,16 +268,15 @@ function figure2(sol)
         push!(sols, solve(prob, Tsit5(), callback=cb)) # store the solution.
     end 
 
-    p = plot([bF(t) for t in trange], [ρF(t) for t in trange], 
+    p = plot()
+    for s in sols 
+        plot!(p, s.t, [s(b)[1] for b in s.t], lw=2, color=:gray)
+    end 
+    plot!(p, [bF(t) for t in trange], [ρF(t) for t in trange], 
             lw=4, 
             color=:blue, 
             legend=false, 
             size=(600, 400))
-
-    for s in sols 
-        plot!(p, s.t, [s(b)[1] for b in s.t], lw=2, color=:gray)
-    end 
-
     p
 end
 
