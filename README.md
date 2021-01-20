@@ -5,22 +5,27 @@ paper ["Reputation and  Sovereign Default"](https://manuelamador.me/files/reputa
 
 ## Running the code 
 
-The code is in Julia. From the root of this folder run julia and: 
+The code is in Julia. To run the code download and install [julia](https://julialang.org/downloads/). 
+
+Download this repository and navigate to its root folder. 
+
+Run julia and use the following commands to make sure that you have the necessary packages:
 
     using Pkg
     Pkg.activate(".")
     Pkg.instantiate()
 
+Then, run the script `scripts/run.jl`:
+
     include(joinpath("scripts", "run.jl"))
 
-The script solves the model and outputs the parameters, the value of `T` and the value of `m`. 
-
-The figures are saved in the `output` folder. 
+The script solves the model, outputs the parameters, the value of `T`, the value of `m`, and 
+generates Figure 1 and 2.  The figures are saved in the `output` subdirectory. 
 
 ### Figure 1 
 
-![image](output/figure1.png)
+![Figure 1](output/figure1.png)
 
 ### Figure 2
 
-![image](output/figure2.png)
+![Figure 2](output/figure2.png)

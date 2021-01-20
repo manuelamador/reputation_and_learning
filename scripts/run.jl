@@ -4,8 +4,12 @@
 #        Pkg.activate(".")
 #        Pkg.instantiate()
 
-
 include(joinpath(@__DIR__, "..", "src", "reputation_and_learning.jl"))
+
+# Avoid problems if running from a headless terminal
+# https://discourse.julialang.org/t/unable-to-display-plot-using-the-repl-gks-errors/12826/18
+ENV["GKSwstype"]="nul" 
+
 
 # Generate the model instance with the basic parameters
 m = SimpleModel()
